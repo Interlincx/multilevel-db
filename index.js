@@ -12,6 +12,14 @@ var DB = process.env.DB || path.join(__dirname, 'db')
 var db = DB_CLOSED ? {} : level(DB)
 
 var server = net.createServer(function (sock) {
+  var mldbServer = multileveldown.server(db)
+
+  mldbServer.on('error', function (err) {
+    sock.destroy()
+    if (err) return console.error(err)
+    process.exit(1)
+  })
+
   sock.on('error', function (err) {
     sock.destroy()
     if (err) return console.error(err)
@@ -19,7 +27,7 @@ var server = net.createServer(function (sock) {
   })
 
   if (!DB_CLOSED) {
-    sock.pipe(multileveldown.server(db)).pipe(sock)
+    sock.pipe(mldbServer).pipe(sock)
   }
 })
 
