@@ -10,11 +10,18 @@ var DB_CLOSED = process.env.DB_CLOSED === 'true'
 var DB = process.env.DB || path.join(__dirname, 'db')
 
 var db = DB_CLOSED ? {} : level(DB)
+var EXTENDED_LOGS = process.env.EXTENDED_LOGS === 'true'
 
 var server = net.createServer(function (sock) {
   var mldbServer = multileveldown.server(db)
+  var incomingMessage = ''
+
+  sock.on('data', function (data) {
+    incomingMessage = data.toString()
+  })
 
   mldbServer.on('error', function (err) {
+    if (EXTENDED_LOGS) console.log({ IpAddress: sock.remoteAddress, incomingMessage, mldbError: err })
     sock.destroy()
     if (err) return console.error(err)
     process.exit(1)
