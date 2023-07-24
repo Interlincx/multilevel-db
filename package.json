@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "docker build -t interlincx/multilevel-db:$npm_package_version .",
+    "build": "docker build -t interlincx/multilevel-db:v$npm_package_version .",
     "test": "tape ./test/*.js && standard"
   },
   "keywords": [],
